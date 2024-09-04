@@ -66,6 +66,11 @@ public class SwaggerTestController {
             parameters = {@Parameter(name = "userNo", description = "사용자 화면에서 넘어오는 user의 pk") /* parameter에 대한 설명을 보여줄 수 있음 */})
     @GetMapping("/users/{userNo}")
     public ResponseEntity<ResponseMessage> findUserByNo(@PathVariable int userNo) {
+
+        /*
+        * 헤더가 꼭 필요하지 않은 간단한 응답에서는 굳이 헤더를 설정할 필요 X
+        * 클라이언트에게 추가 정보를 전달해야 하거나 특정 헤더가 요구되는 경우에만 명시적으로 헤더를 설정해도 된다.
+        * */
         // Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(
@@ -86,27 +91,45 @@ public class SwaggerTestController {
 
         // method chaining
         return ResponseEntity.ok()
-                .headers(headers)
+//                .headers(headers)
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
     // 유저 추가
+//    @PostMapping("/users")    // 등록시엔 Post 사용
+//    public ResponseEntity<?> register(@RequestBody UserDTO newUser) {
+//        // 마지막에 위치한 유저 번호
+//        int lastUserNo = users.get(users.size() - 1).getNo();
+//
+//        // 마지막에 위치한 유저 번호 + 1
+//        newUser.setNo(lastUserNo + 1);
+//
+//        // 유저 추가
+//        users.add(newUser);
+//
+//        System.out.println("newUser = " + newUser);
+//
+//        return ResponseEntity
+//                .created(URI.create("/entity/users/" + users.get(users.size() - 1).getNo()))    // 경로
+//                .build();
+//    }
+
+    // 유저 추가
     @PostMapping("/users")    // 등록시엔 Post 사용
     public ResponseEntity<?> register(@RequestBody UserDTO newUser) {
-        // 마지막에 위치한 유저 번호
         int lastUserNo = users.get(users.size() - 1).getNo();
-
-        // 마지막에 위치한 유저 번호 + 1
         newUser.setNo(lastUserNo + 1);
-
-        // 유저 추가
         users.add(newUser);
 
-        System.out.println("newUser = " + newUser);
+        // service에서 결과만 넘겨주기
+        String successMsg = "회원 등록에 성공하였습니다.";
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", successMsg);
 
         return ResponseEntity
-                .created(URI.create("/entity/users/" + users.get(users.size() - 1).getNo()))    // 경로
-                .build();
+                .ok()
+                .body(new ResponseMessage(201, "회원 추가 성공", responseMap));
     }
 
     // 유저 정보 수정

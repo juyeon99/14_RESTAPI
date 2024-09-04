@@ -9,7 +9,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class ResponseMessage {
+public class ResponseMessage {  // 공통된 response
     private int httpStatusCode;
     private String message;
     private Map<String, Object> results;
